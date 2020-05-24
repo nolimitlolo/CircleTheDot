@@ -1,0 +1,109 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class GameController implements ActionListener {
+  private GameModel model;
+  private int size;
+  private GameView gameView;
+  private BoardView boardView;
+  
+  public GameController(int size) {
+    model = new GameModel(size);
+    gameView = new GameView(model, this);
+    boardView = gameView.getBoardView();
+    
+  }
+  
+  public void start() {
+    model.reset();
+    boardView.update();
+  }
+  
+  public void reset() {
+    // Je ne l'ai pas implémenter puisque je me suis dit que start() faisais la même chose.
+  }
+  
+  
+  private void checkWin() {
+        Point blueDot = model.getCurrentDot();
+        int x = blueDot.getX();
+        int y = blueDot.getY();
+        if (x == 0 || x == 8 || y == 0 || y == 8) {
+        String[] buttons = { "Play Again", "Quit" };
+        int response = JOptionPane.showOptionDialog(null, "You lost! Would you like to play again?", "Lost",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+        if (response == 0) {
+          model.reset();
+          boardView.update();
+        }
+        else {
+          System.exit(0);
+        }
+        }
+        else if (x % 2 == 0) {
+          if (model.getCurrentStatus(x+1,y) == model.SELECTED && 
+             model.getCurrentStatus(x,y+1) == model.SELECTED && 
+             model.getCurrentStatus(x-1,y) == model.SELECTED && 
+             model.getCurrentStatus(x,y-1) == model.SELECTED && 
+             model.getCurrentStatus(x+1,y-1) == model.SELECTED && 
+             model.getCurrentStatus(x-1,y-1) == model.SELECTED) {
+            String[] buttons = { "Play Again", "Quit" };
+        int response = JOptionPane.showOptionDialog(null, "Congratulations, you won in " + 
+                                                    model.getNumberOfSteps() + " steps!", "Win",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+        if (response == 0) {
+          model.reset();
+          boardView.update();
+        }
+        
+        else {
+          System.exit(0);
+        }
+          }
+        }
+        else if (x % 2 != 0) {
+          if (model.getCurrentStatus(x+1,y) == model.SELECTED &&
+              model.getCurrentStatus(x,y+1) == model.SELECTED &&
+              model.getCurrentStatus(x-1,y) == model.SELECTED &&
+              model.getCurrentStatus(x,y-1) == model.SELECTED && 
+              model.getCurrentStatus(x+1,y+1) == model.SELECTED && 
+              model.getCurrentStatus(x-1,y+1) == model.SELECTED) {
+            String[] buttons = { "Play Again", "Quit" };
+        int response = JOptionPane.showOptionDialog(null, "Congratulations, you won in " +
+                                                    model.getNumberOfSteps() + " steps!", "Win",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttons, buttons[0]);
+        if (response == 0) {
+          model.reset();
+          boardView.update();
+        }
+        else {
+          System.exit(0);
+        }
+          }
+        }
+  }
+    
+  public void actionPerformed (ActionEvent e) {
+    if (e.getSource() instanceof DotButton){
+      DotButton current = (DotButton) e.getSource();
+      int i = current.getRow();
+      int j = current.getColumn();
+      if (model.getCurrentStatus(i,j) != model.DOT) {
+        model.select(i,j);
+        boardView.update();
+        checkWin();
+      }
+    }
+    else if (e.getSource() instanceof JButton) {
+      String command = e.getActionCommand();
+      if (command == "Reset") {
+        start();
+      }
+      else if (command == "Quit") {
+        System.exit(0);
+    }
+    }
+  }
+}

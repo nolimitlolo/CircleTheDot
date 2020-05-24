@@ -1,0 +1,51 @@
+import java.awt.*;
+import javax.swing.*;
+
+
+
+public class DotButton extends JButton {
+  private int row, column, type;
+  private ImageIcon image0, image1, image2;
+  
+  public DotButton (int row, int column, int type) {
+    this.type = type;
+    this.row = row;
+    this.column = column;
+    image0 = new ImageIcon(getClass().getResource("data//ball-0.png"));
+    image1 = new ImageIcon(getClass().getResource("data//ball-1.png"));
+    image2 = new ImageIcon(getClass().getResource("data//ball-2.png"));
+    if (type == 0) {
+      setIcon(image0);
+    }
+    
+    else if (type == 1) {
+      setIcon(image1);
+    }
+    
+    else{
+      setIcon(image2);
+    }
+  }
+  
+  public void setType (int type){
+    if (type == 0) {
+      setIcon(image0);
+    }
+    
+    else if (type == 1) {
+      setIcon(image1);
+    }
+    
+    else{
+      setIcon(image2);
+    }
+  }
+  
+  public int getRow() {
+    return row;
+  }
+  
+  public int getColumn() {
+    return column;
+  }
+}

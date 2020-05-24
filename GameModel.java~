@@ -1,0 +1,210 @@
+import java.util.Random;
+public class GameModel {
+  public static final int AVAILABLE = 0;
+  public static final int SELECTED = 1;
+  public static final int DOT = 2;
+  private int[][] modelPoints;
+  private int size;
+  private int steps;
+  private Point blueDotLoc;
+  
+  public GameModel (int size) {
+    this.size = size;
+    modelPoints = new int[size][size];
+  }
+  
+  public void reset () {
+    steps = 0;
+    resetAllDot();
+    startBlueDot();
+    getCurrentDot();
+    orangeDotSet();
+  }
+  
+  private void resetAllDot() {
+    for (int i=0; i<modelPoints.length; i++) {
+      for (int j=0; j<modelPoints[i].length; j++) {
+        modelPoints[i][j] = AVAILABLE;
+      }
+    }
+  }
+  
+  private void startBlueDot() {
+    int i, j;
+    Random ran = new Random();
+    if (size == 9) {
+      i = ran.nextInt(6-3) + 3;
+      j = ran.nextInt(6-3) + 3;
+      modelPoints[i][j] = DOT;
+    }
+    else {
+      i = ran.nextInt(5-3) + 3;
+      j = ran.nextInt(5-3) + 3;
+      modelPoints[i][j] = DOT;
+    }
+ }
+  
+  private void orangeDotSet() {
+    Random generator = new Random();
+    int orange;
+    for (int i=0; i<modelPoints.length; i++) {
+      for (int j=0; j< modelPoints[i].length; j++) {
+        orange = generator.nextInt(100) + 1;
+        if (0<orange && 10>orange && modelPoints[i][j] != DOT) {
+          modelPoints[i][j] = SELECTED;
+        }
+      }
+    }
+  }
+  
+  public int getSize() {
+    return size;
+  }
+  
+  public int getCurrentStatus(int i, int j) {
+    return modelPoints[i][j];
+  }
+  
+  public void select (int i, int j) {
+    modelPoints[i][j] = SELECTED;
+    moveBlueDot();
+    steps++;
+    int x = blueDotLoc.getX();
+    int y = blueDotLoc.getY();
+  }
+  
+  private void moveBlueDot() {
+    Random ran = new Random();
+    int x,y,r;
+    getCurrentDot();
+    x = blueDotLoc.getX();
+    y = blueDotLoc.getY();
+    r = ran.nextInt(6);
+    System.out.println(r);
+    if (r==0) {
+      checkWin();
+      if (modelPoints[x+1][y] == AVAILABLE) {
+      setCurrentDot(x+1,y);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==1) {
+      checkWin();
+      if (modelPoints[x][y+1] == AVAILABLE) {
+      setCurrentDot(x,y+1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==2) {
+      checkWin();
+      if (modelPoints[x+1][y-1] == AVAILABLE && x % 2 == 0) {
+      setCurrentDot(x+1,y-1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==3) {
+      checkWin();
+      if (modelPoints[x-1][y-1] == AVAILABLE && x % 2 == 0) {
+      setCurrentDot(x-1,y-1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==4) {
+      checkWin();
+      if (modelPoints[x-1][y] == AVAILABLE) {
+      setCurrentDot(x-1,y);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==5) {
+      checkWin();
+      if (modelPoints[x][y-1] == AVAILABLE) {
+      setCurrentDot(x,y-1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==2) {
+      checkWin();
+      if (modelPoints[x+1][y+1] == AVAILABLE && x % 2 != 0){
+      setCurrentDot(x+1,y+1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+    else if (r==3) {
+      checkWin();
+      if (modelPoints[x-1][y+1] == AVAILABLE && x % 2 != 0){
+      setCurrentDot(x-1,y+1);
+      }
+      else if (checkWin() == false) {
+        moveBlueDot();
+      }
+    }
+ }
+  
+  public void setCurrentDot(int i, int j) {
+      int x,y;
+      x = blueDotLoc.getX();
+      y = blueDotLoc.getY();
+      modelPoints[x][y] = AVAILABLE;
+      modelPoints[i][j] = DOT;
+      getCurrentDot();
+ }
+  
+  private boolean checkWin() {
+    boolean win = false;
+    int x,y;
+    x = blueDotLoc.getX();
+    y = blueDotLoc.getY();
+    if (x % 2 == 0) {
+          if (getCurrentStatus(x+1,y) == SELECTED && 
+             getCurrentStatus(x,y+1) == SELECTED && 
+             getCurrentStatus(x-1,y) == SELECTED && 
+             getCurrentStatus(x,y-1) == SELECTED && 
+             getCurrentStatus(x+1,y-1) == SELECTED && 
+             getCurrentStatus(x-1,y-1) == SELECTED) {
+            win = true;
+          }
+    }
+      else if (x % 2 != 0) {
+          if (getCurrentStatus(x+1,y) == SELECTED &&
+              getCurrentStatus(x,y+1) == SELECTED &&
+              getCurrentStatus(x-1,y) == SELECTED &&
+              getCurrentStatus(x,y-1) == SELECTED && 
+              getCurrentStatus(x+1,y+1) == SELECTED && 
+              getCurrentStatus(x-1,y+1) == SELECTED) {
+            win = true;
+          }
+      }
+    System.out.println(win);
+    return win;
+    }
+  
+  public Point getCurrentDot(){
+    for (int i=0; i<modelPoints.length; i++) {
+      for (int j=0; j<modelPoints[i].length; j++) {
+        if (modelPoints[i][j] == DOT) {
+          blueDotLoc = new Point(i,j);
+        }
+      }
+    }
+    return blueDotLoc;
+  }
+  
+  public int getNumberOfSteps() {
+    return steps;
+  }
+}

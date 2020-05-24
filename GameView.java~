@@ -1,0 +1,36 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class GameView extends JFrame {
+  private JPanel pan;
+  private int size = 8;
+  BoardView board;
+  private GameModel model;
+  
+  public GameView(GameModel model, GameController gameController) {
+    super("Dot");
+    this.model = model;
+    setLayout(new BorderLayout());
+    setBackground(Color.WHITE);
+    pan = new JPanel();
+    add(pan, BorderLayout.SOUTH);
+    pan.setBackground(Color.WHITE);
+    pan.setLayout(new FlowLayout());
+    JButton reset, quit;
+    reset = new JButton("Reset");
+    quit = new JButton("Quit");
+    reset.addActionListener(gameController);
+    quit.addActionListener(gameController);
+    pan.add(reset);
+    pan.add(quit);
+    board = new BoardView(model, gameController);
+    add(board, BorderLayout.CENTER);
+    setResizable(false);
+    pack();
+    setVisible(true);
+  }
+  
+  public BoardView getBoardView() {
+    return board;
+  }
+}
